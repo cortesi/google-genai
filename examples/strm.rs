@@ -16,13 +16,17 @@ async fn main() -> google_genai::error::Result<()> {
     while let Some(response) = stream.next().await {
         match response {
             Ok(content) => {
+                if content.candidates.is_none() {
+                    // This is our [DONE] marker
+                    break;
+                }
                 if let Some(candidates) = content.candidates {
                     for candidate in candidates {
                         if let Some(content) = candidate.content {
                             if let Some(parts) = content.parts {
                                 for part in parts {
                                     if let Some(text) = part.text {
-                                        print!("\n\n{}\n\n", text);
+                                        print!("{}", text);
                                     }
                                 }
                             }

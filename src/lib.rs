@@ -9,6 +9,8 @@ use std::pin::Pin;
 const BASE_URL: &str = "https://generativelanguage.googleapis.com/v1beta/models";
 const DEFAULT_MODEL: &str = "gemini-pro";
 
+use reqwest_eventsource::{Event, RequestBuilderExt};
+
 pub type ResponseStream =
     Pin<Box<dyn Stream<Item = Result<datatypes::GenerateContentResponse>> + Send>>;
 
@@ -22,39 +24,37 @@ pub async fn generate_content_stream(
         "{}/{}:streamGenerateContent?alt=sse&key={}",
         BASE_URL, model, api_key
     );
-
-    let response = client
+    let es = client
         .post(&url)
         .json(&params)
-        .send()
-        .await
-        .map_err(|e| GenAiError::Internal(format!("Request failed: {}", e)))?;
-
-    let stream = response
-        .bytes_stream()
-        .map(|chunk_result| {
-            chunk_result
-                .map_err(|e| GenAiError::Internal(format!("Stream error: {}", e)))
-                .and_then(|chunk| {
-                    // Each SSE message starts with "data: " and ends with two newlines
-                    let text = String::from_utf8_lossy(&chunk);
-                    if text.starts_with("data: ") {
-                        let json_str = text.strip_prefix("data: ").unwrap().trim();
-                        if json_str == "[DONE]" {
-                            return Ok(None);
-                        }
-                        serde_json::from_str(json_str)
-                            .map_err(|e| {
-                                GenAiError::Internal(format!(
-                                    "JSON parse error: {}\n{}",
-                                    e, json_str
-                                ))
-                            })
-                            .map(Some)
-                    } else {
-                        Ok(None)
-                    }
-                })
+        .eventsource()
+        .map_err(|e| GenAiError::Internal(format!("Failed to create event source: {}", e)))?;
+    let stream = es
+        .map(|event| match event {
+            Ok(Event::Message(message)) => {
+                let data = message.data;
+                if data == "[DONE]" {
+                    return Ok(Some(datatypes::GenerateContentResponse {
+                        candidates: None,
+                        prompt_feedback: None,
+                        model_version: None,
+                        usage_metadata: None,
+                    }));
+                }
+                serde_json::from_str(&data)
+                    .map_err(|e| GenAiError::Internal(format!("JSON parse error: {}\n{}", e, data)))
+                    .map(Some)
+            }
+            Ok(Event::Open) => Ok(None),
+            Err(reqwest_eventsource::Error::StreamEnded) => {
+                Ok(Some(datatypes::GenerateContentResponse {
+                    candidates: None,
+                    prompt_feedback: None,
+                    model_version: None,
+                    usage_metadata: None,
+                }))
+            }
+            Err(e) => Err(GenAiError::Internal(format!("Stream error: {}", e))),
         })
         .filter_map(|r| async move { r.transpose() });
 
