@@ -619,3 +619,24 @@ pub struct GenerateContentResponse {
     pub prompt_feedback: Option<GenerateContentResponsePromptFeedback>,
     pub usage_metadata: Option<GenerateContentResponseUsageMetadata>,
 }
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
+pub struct GenerationConfig {
+    pub audio_timestamp: Option<bool>,
+    pub candidate_count: Option<i64>,
+    pub frequency_penalty: Option<f64>,
+    pub logprobs: Option<i64>,
+    pub max_output_tokens: Option<i64>,
+    pub presence_penalty: Option<f64>,
+    pub response_logprobs: Option<bool>,
+    pub response_mime_type: Option<String>,
+    pub response_schema: Option<Schema>,
+    pub routing_config: Option<GenerationConfigRoutingConfig>,
+    pub seed: Option<i64>,
+    pub stop_sequences: Option<Vec<String>>,
+    pub temperature: Option<f64>,
+    pub top_k: Option<f64>,
+    pub top_p: Option<f64>,
+}

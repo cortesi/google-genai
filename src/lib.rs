@@ -81,6 +81,10 @@ pub async fn generate_content(
         .send()
         .await
         .map_err(|e| GenAiError::Internal(format!("Request failed: {}", e)))?;
+    if !response.status().is_success() {
+        let error_text = response.text().await.unwrap_or_default();
+        return Err(GenAiError::Remote(error_text));
+    }
     response
         .json()
         .await
