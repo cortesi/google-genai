@@ -14,6 +14,10 @@ use reqwest_eventsource::{Event, RequestBuilderExt};
 pub type ResponseStream =
     Pin<Box<dyn Stream<Item = Result<datatypes::GenerateContentResponse>> + Send>>;
 
+/// Generates streaming content from the API.
+///
+/// Returns a stream of `GenerateContentResponse` objects that can be consumed asynchronously.
+/// Uses Server-Sent Events (SSE) to stream the responses.
 pub async fn generate_content_stream(
     api_key: &str,
     params: datatypes::GenerateContentParameters,
@@ -61,6 +65,9 @@ pub async fn generate_content_stream(
     Ok(Box::pin(stream))
 }
 
+/// Generates content from the API in a single request.
+///
+/// Makes a single POST request to the API and returns the complete response.
 pub async fn generate_content(
     api_key: &str,
     params: datatypes::GenerateContentParameters,
