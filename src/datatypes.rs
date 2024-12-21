@@ -438,3 +438,145 @@ pub struct Citation {
     pub title: Option<String>,
     pub uri: Option<String>,
 }
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct CitationMetadata {
+    pub citations: Option<Vec<Citation>>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GroundingChunkRetrievedContext {
+    pub text: Option<String>,
+    pub title: Option<String>,
+    pub uri: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GroundingChunkWeb {
+    pub title: Option<String>,
+    pub uri: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GroundingChunk {
+    pub retrieved_context: Option<GroundingChunkRetrievedContext>,
+    pub web: Option<GroundingChunkWeb>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Segment {
+    pub end_index: Option<i64>,
+    pub part_index: Option<i64>,
+    pub start_index: Option<i64>,
+    pub text: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GroundingSupport {
+    pub confidence_scores: Option<Vec<f64>>,
+    pub grounding_chunk_indices: Option<Vec<i64>>,
+    pub segment: Option<Segment>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct RetrievalMetadata {
+    pub google_search_dynamic_retrieval_score: Option<f64>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct SearchEntryPoint {
+    pub rendered_content: Option<String>,
+    pub sdk_blob: Option<Vec<u8>>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GroundingMetadata {
+    pub grounding_chunks: Option<Vec<GroundingChunk>>,
+    pub grounding_supports: Option<Vec<GroundingSupport>>,
+    pub retrieval_metadata: Option<RetrievalMetadata>,
+    pub retrieval_queries: Option<Vec<String>>,
+    pub search_entry_point: Option<SearchEntryPoint>,
+    pub web_search_queries: Option<Vec<String>>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct LogprobsResultCandidate {
+    pub log_probability: Option<f64>,
+    pub token: Option<String>,
+    pub token_id: Option<i64>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct LogprobsResultTopCandidates {
+    pub candidates: Option<Vec<LogprobsResultCandidate>>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct LogprobsResult {
+    pub chosen_candidates: Option<Vec<LogprobsResultCandidate>>,
+    pub top_candidates: Option<Vec<LogprobsResultTopCandidates>>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct SafetyRating {
+    pub blocked: Option<bool>,
+    pub category: Option<HarmCategory>,
+    pub probability: Option<HarmProbability>,
+    pub probability_score: Option<f64>,
+    pub severity: Option<HarmSeverity>,
+    pub severity_score: Option<f64>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Candidate {
+    pub content: Option<Content>,
+    pub citation_metadata: Option<CitationMetadata>,
+    pub finish_message: Option<String>,
+    pub token_count: Option<i64>,
+    pub avg_logprobs: Option<f64>,
+    pub finish_reason: Option<FinishReason>,
+    pub grounding_metadata: Option<GroundingMetadata>,
+    pub index: Option<i64>,
+    pub logprobs_result: Option<LogprobsResult>,
+    pub safety_ratings: Option<Vec<SafetyRating>>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GenerateContentResponsePromptFeedback {
+    pub block_reason: Option<BlockedReason>,
+    pub block_reason_message: Option<String>,
+    pub safety_ratings: Option<Vec<SafetyRating>>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GenerateContentResponseUsageMetadata {
+    pub cached_content_token_count: Option<i64>,
+    pub candidates_token_count: Option<i64>,
+    pub prompt_token_count: Option<i64>,
+    pub total_token_count: Option<i64>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GenerateContentResponse {
+    pub candidates: Option<Vec<Candidate>>,
+    pub model_version: Option<String>,
+    pub prompt_feedback: Option<GenerateContentResponsePromptFeedback>,
+    pub usage_metadata: Option<GenerateContentResponseUsageMetadata>,
+}
