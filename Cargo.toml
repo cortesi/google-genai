@@ -2,6 +2,9 @@
 name = "google-genai"
 version = "0.1.0"
 edition = "2021"
+authors = ["Aldo Cortesi <aldo@corte.si>"]
+description = "Bindigns for the Google AI Platform API"
+keywords = ["google", "genai", "gemini", "llm"]
 
 [dependencies]
 derive_setters = "0.1.6"
