@@ -3,9 +3,10 @@ use serde_derive::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use time::Date;
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum Outcome {
+    #[default]
     Unspecified,
     Ok,
     Failed,
@@ -31,9 +32,10 @@ pub enum Type {
     Object,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum HarmCategory {
+    #[default]
     Unspecified,
     HateSpeech,
     DangerousContent,
@@ -52,9 +54,10 @@ pub enum HarmBlockMethod {
     Probability,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum HarmBlockThreshold {
+    #[default]
     Unspecified,
     BlockLowAndAbove,
     BlockMediumAndAbove,
@@ -176,14 +179,16 @@ pub enum SubjectReferenceType {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct VideoMetadata {
     pub end_offset: Option<String>,
     pub start_offset: Option<String>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters)]
+#[setters(strip_option, into)]
 pub struct CodeExecutionResult {
     pub outcome: Outcome,
     pub output: Option<String>,
@@ -202,7 +207,8 @@ pub struct FileData {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct FunctionCall {
     pub id: Option<String>,
     pub args: Option<serde_json::Value>,
@@ -210,7 +216,8 @@ pub struct FunctionCall {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct FunctionResponse {
     pub id: Option<String>,
     pub name: String,
@@ -238,14 +245,16 @@ pub struct Part {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct Content {
     pub parts: Option<Vec<Part>>,
     pub role: Option<String>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct Schema {
     pub min_items: Option<String>,
     pub example: Option<serde_json::Value>,
@@ -262,8 +271,10 @@ pub struct Schema {
     pub maximum: Option<f64>,
     pub nullable: Option<bool>,
     pub max_properties: Option<String>,
+    #[setters(skip)]
     pub r#type: Option<Type>,
     pub description: Option<String>,
+    #[setters(skip)]
     pub r#enum: Option<Vec<String>>,
     pub format: Option<String>,
     pub items: Option<Box<Schema>>,
@@ -272,7 +283,8 @@ pub struct Schema {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters)]
+#[setters(strip_option, into)]
 pub struct SafetySetting {
     pub method: Option<HarmBlockMethod>,
     pub category: HarmCategory,
@@ -280,7 +292,8 @@ pub struct SafetySetting {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct FunctionDeclaration {
     pub response: Option<Schema>,
     pub description: Option<String>,
@@ -292,14 +305,15 @@ pub struct FunctionDeclaration {
 pub struct GoogleSearch {}
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct DynamicRetrievalConfig {
     pub mode: Option<DynamicRetrievalConfigMode>,
     pub dynamic_threshold: Option<f64>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct GoogleSearchRetrieval {
     pub dynamic_retrieval_config: Option<DynamicRetrievalConfig>,
 }
@@ -310,14 +324,16 @@ pub struct VertexAISearch {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct VertexRAGStoreRAGResource {
     pub rag_corpus: Option<String>,
     pub rag_file_ids: Option<Vec<String>>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct VertexRAGStore {
     pub rag_corpora: Option<Vec<String>>,
     pub rag_resources: Option<Vec<VertexRAGStoreRAGResource>>,
@@ -326,7 +342,8 @@ pub struct VertexRAGStore {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct Retrieval {
     pub vertex_ai_search: Option<VertexAISearch>,
     pub vertex_rag_store: Option<VertexRAGStore>,
@@ -336,7 +353,8 @@ pub struct Retrieval {
 pub struct ToolCodeExecution {}
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct Tool {
     pub function_declarations: Option<Vec<FunctionDeclaration>>,
     pub retrieval: Option<Retrieval>,
@@ -346,38 +364,39 @@ pub struct Tool {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct FunctionCallingConfig {
     pub mode: Option<FunctionCallingConfigMode>,
     pub allowed_function_names: Option<Vec<String>>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct ToolConfig {
     pub function_calling_config: Option<FunctionCallingConfig>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct PrebuiltVoiceConfig {
     pub voice_name: Option<String>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct VoiceConfig {
     pub prebuilt_voice_config: Option<PrebuiltVoiceConfig>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct SpeechConfig {
     pub voice_config: Option<VoiceConfig>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct GenerationConfigRoutingConfigAutoRoutingMode {
     pub model_routing_preference: Option<String>,
 }
@@ -389,7 +408,8 @@ pub struct GenerationConfigRoutingConfigManualRoutingMode {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct GenerationConfigRoutingConfig {
     pub auto_mode: Option<GenerationConfigRoutingConfigAutoRoutingMode>,
     pub manual_mode: Option<GenerationConfigRoutingConfigManualRoutingMode>,
@@ -433,7 +453,8 @@ pub struct GenerateContentParameters {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct Citation {
     pub end_index: Option<i64>,
     pub license: Option<String>,
@@ -444,13 +465,14 @@ pub struct Citation {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct CitationMetadata {
     pub citations: Option<Vec<Citation>>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct GroundingChunkRetrievedContext {
     pub text: Option<String>,
     pub title: Option<String>,
@@ -458,21 +480,24 @@ pub struct GroundingChunkRetrievedContext {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct GroundingChunkWeb {
     pub title: Option<String>,
     pub uri: Option<String>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct GroundingChunk {
     pub retrieved_context: Option<GroundingChunkRetrievedContext>,
     pub web: Option<GroundingChunkWeb>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct Segment {
     pub end_index: Option<i64>,
     pub part_index: Option<i64>,
@@ -481,7 +506,8 @@ pub struct Segment {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct GroundingSupport {
     pub confidence_scores: Option<Vec<f64>>,
     pub grounding_chunk_indices: Option<Vec<i64>>,
@@ -489,20 +515,22 @@ pub struct GroundingSupport {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct RetrievalMetadata {
     pub google_search_dynamic_retrieval_score: Option<f64>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct SearchEntryPoint {
     pub rendered_content: Option<String>,
     pub sdk_blob: Option<Vec<u8>>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct GroundingMetadata {
     pub grounding_chunks: Option<Vec<GroundingChunk>>,
     pub grounding_supports: Option<Vec<GroundingSupport>>,
@@ -513,7 +541,8 @@ pub struct GroundingMetadata {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct LogprobsResultCandidate {
     pub log_probability: Option<f64>,
     pub token: Option<String>,
@@ -521,20 +550,22 @@ pub struct LogprobsResultCandidate {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct LogprobsResultTopCandidates {
     pub candidates: Option<Vec<LogprobsResultCandidate>>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct LogprobsResult {
     pub chosen_candidates: Option<Vec<LogprobsResultCandidate>>,
     pub top_candidates: Option<Vec<LogprobsResultTopCandidates>>,
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct SafetyRating {
     pub blocked: Option<bool>,
     pub category: Option<HarmCategory>,
@@ -545,7 +576,8 @@ pub struct SafetyRating {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct Candidate {
     pub content: Option<Content>,
     pub citation_metadata: Option<CitationMetadata>,
@@ -560,7 +592,8 @@ pub struct Candidate {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct GenerateContentResponsePromptFeedback {
     pub block_reason: Option<BlockedReason>,
     pub block_reason_message: Option<String>,
@@ -568,7 +601,8 @@ pub struct GenerateContentResponsePromptFeedback {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct GenerateContentResponseUsageMetadata {
     pub cached_content_token_count: Option<i64>,
     pub candidates_token_count: Option<i64>,
@@ -577,7 +611,8 @@ pub struct GenerateContentResponseUsageMetadata {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct GenerateContentResponse {
     pub candidates: Option<Vec<Candidate>>,
     pub model_version: Option<String>,
