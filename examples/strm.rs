@@ -11,7 +11,11 @@ async fn main() -> google_genai::error::Result<()> {
             Part::default().text("Write a story about a magic backpack."),
         ])]);
 
-    let mut stream = google_genai::generate_content_stream(&api_key, params).await?;
+    let request = google_genai::datatypes::GenerateContentReq::default()
+        .contents(params.contents.unwrap())
+        .model(params.model.unwrap());
+
+    let mut stream = google_genai::generate_content_stream(&api_key, request).await?;
 
     while let Some(response) = stream.next().await {
         match response {

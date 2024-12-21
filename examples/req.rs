@@ -14,7 +14,11 @@ async fn main() -> google_genai::error::Result<()> {
         }])
         .model("gemini-exp-1206");
 
-    let response = google_genai::generate_content(&api_key, params).await?;
+    let request = google_genai::datatypes::GenerateContentReq::default()
+        .contents(params.contents.unwrap())
+        .model(params.model.unwrap());
+
+    let response = google_genai::generate_content(&api_key, request).await?;
 
     println!("Response: {:#?}", response);
 

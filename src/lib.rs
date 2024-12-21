@@ -7,7 +7,6 @@ use futures_util::StreamExt;
 use std::pin::Pin;
 
 const BASE_URL: &str = "https://generativelanguage.googleapis.com/v1beta/models";
-const DEFAULT_MODEL: &str = "gemini-pro";
 
 use reqwest_eventsource::{Event, RequestBuilderExt};
 
@@ -20,17 +19,16 @@ pub type ResponseStream =
 /// Uses Server-Sent Events (SSE) to stream the responses.
 pub async fn generate_content_stream(
     api_key: &str,
-    params: datatypes::GenerateContentParameters,
+    req: datatypes::GenerateContentReq,
 ) -> Result<ResponseStream> {
     let client = reqwest::Client::new();
-    let model = params.model.as_deref().unwrap_or(DEFAULT_MODEL);
     let url = format!(
         "{}/{}:streamGenerateContent?alt=sse&key={}",
-        BASE_URL, model, api_key
+        BASE_URL, req.model, api_key
     );
     let es = client
         .post(&url)
-        .json(&params)
+        .json(&req)
         .eventsource()
         .map_err(|e| GenAiError::Internal(format!("Failed to create event source: {}", e)))?;
     let stream = es
@@ -70,14 +68,13 @@ pub async fn generate_content_stream(
 /// Makes a single POST request to the API and returns the complete response.
 pub async fn generate_content(
     api_key: &str,
-    params: datatypes::GenerateContentParameters,
+    req: datatypes::GenerateContentReq,
 ) -> Result<datatypes::GenerateContentResponse> {
     let client = reqwest::Client::new();
-    let model = params.model.as_deref().unwrap_or(DEFAULT_MODEL);
-    let url = format!("{}/{}:generateContent?key={}", BASE_URL, model, api_key);
+    let url = format!("{}/{}:generateContent?key={}", BASE_URL, req.model, api_key);
     let response = client
         .post(&url)
-        .json(&params)
+        .json(&req)
         .send()
         .await
         .map_err(|e| GenAiError::Internal(format!("Request failed: {}", e)))?;

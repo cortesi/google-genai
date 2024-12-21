@@ -255,49 +255,82 @@ pub struct Content {
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
 #[setters(strip_option, into)]
+/// Schema that defines the format of input and output data.
+/// Represents a select subset of an OpenAPI 3.0 schema object.
 pub struct Schema {
+    /// Optional. Minimum number of elements for Type.ARRAY.
     pub min_items: Option<String>,
+    /// Optional. Example of the object.
     pub example: Option<serde_json::Value>,
+    /// Optional. The order of the properties.
     pub property_ordering: Option<Vec<String>>,
+    /// Optional. Pattern of the Type.STRING to restrict a string to a regular expression.
     pub pattern: Option<String>,
+    /// Optional. Minimum value of the Type.INTEGER and Type.NUMBER.
     pub minimum: Option<f64>,
+    /// Optional. Default value of the data.
     pub default: Option<serde_json::Value>,
+    /// Optional. The value should be validated against any of the subschemas.
     pub any_of: Option<Vec<Schema>>,
+    /// Optional. Maximum length of the Type.STRING.
     pub max_length: Option<String>,
+    /// Optional. The title of the Schema.
     pub title: Option<String>,
+    /// Optional. Minimum length of the Type.STRING.
     pub min_length: Option<String>,
+    /// Optional. Minimum number of properties for Type.OBJECT.
     pub min_properties: Option<String>,
+    /// Optional. Maximum number of elements for Type.ARRAY.
     pub max_items: Option<String>,
+    /// Optional. Maximum value of the Type.INTEGER and Type.NUMBER.
     pub maximum: Option<f64>,
+    /// Optional. Indicates if the value may be null.
     pub nullable: Option<bool>,
+    /// Optional. Maximum number of properties for Type.OBJECT.
     pub max_properties: Option<String>,
+    /// Optional. The type of the data.
     #[setters(skip)]
     pub r#type: Option<Type>,
+    /// Optional. The description of the data.
     pub description: Option<String>,
+    /// Optional. Possible values of the element of primitive type with enum format.
     #[setters(skip)]
     pub r#enum: Option<Vec<String>>,
+    /// Optional. The format of the data.
     pub format: Option<String>,
+    /// Optional. Schema of the elements of Type.ARRAY.
     pub items: Option<Box<Schema>>,
+    /// Optional. Properties of Type.OBJECT.
     pub properties: Option<std::collections::HashMap<String, Schema>>,
+    /// Optional. Required properties of Type.OBJECT.
     pub required: Option<Vec<String>>,
 }
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, Clone, Setters)]
 #[setters(strip_option, into)]
+/// Safety settings.
 pub struct SafetySetting {
+    /// Determines if the harm block method uses probability or severity scores.
     pub method: Option<HarmBlockMethod>,
+    /// Required. Harm category.
     pub category: HarmCategory,
+    /// Required. The harm block threshold.
     pub threshold: HarmBlockThreshold,
 }
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
 #[setters(strip_option, into)]
+/// Defines a function that the model can generate JSON inputs for.
 pub struct FunctionDeclaration {
+    /// Describes the output from the function in the OpenAPI JSON Schema Object format.
     pub response: Option<Schema>,
+    /// Optional. Description and purpose of the function.
     pub description: Option<String>,
+    /// Required. The name of the function to call.
     pub name: String,
+    /// Optional. Describes the parameters to this function in JSON Schema Object format.
     pub parameters: Option<Schema>,
 }
 
@@ -307,27 +340,37 @@ pub struct GoogleSearch {}
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
 #[setters(strip_option, into)]
+/// Describes the options to customize dynamic retrieval.
 pub struct DynamicRetrievalConfig {
+    /// The mode of the predictor to be used in dynamic retrieval.
     pub mode: Option<DynamicRetrievalConfigMode>,
+    /// Optional. The threshold to be used in dynamic retrieval.
     pub dynamic_threshold: Option<f64>,
 }
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
+/// Tool to retrieve public web data for grounding, powered by Google.
 pub struct GoogleSearchRetrieval {
+    /// Specifies the dynamic retrieval configuration for the given source.
     pub dynamic_retrieval_config: Option<DynamicRetrievalConfig>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+/// Retrieve from Vertex AI Search datastore for grounding.
 pub struct VertexAISearch {
+    /// Required. Fully-qualified Vertex AI Search data store resource ID.
     pub datastore: String,
 }
 
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
 #[setters(strip_option, into)]
+/// The definition of the RAG resource.
 pub struct VertexRAGStoreRAGResource {
+    /// Optional. RAGCorpora resource name.
     pub rag_corpus: Option<String>,
+    /// Optional. rag_file_id. The files should be in the same rag_corpus.
     pub rag_file_ids: Option<Vec<String>>,
 }
 
@@ -355,11 +398,17 @@ pub struct ToolCodeExecution {}
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
 #[setters(strip_option, into)]
+/// Tool details of a tool that the model may use to generate a response.
 pub struct Tool {
+    /// List of function declarations that the tool supports.
     pub function_declarations: Option<Vec<FunctionDeclaration>>,
+    /// Optional. Retrieval tool type.
     pub retrieval: Option<Retrieval>,
+    /// Optional. Google Search tool type.
     pub google_search: Option<GoogleSearch>,
+    /// Optional. GoogleSearchRetrieval tool type.
     pub google_search_retrieval: Option<GoogleSearchRetrieval>,
+    /// Optional. CodeExecution tool type.
     pub code_execution: Option<ToolCodeExecution>,
 }
 
@@ -378,69 +427,54 @@ pub struct ToolConfig {
 }
 
 #[skip_serializing_none]
+/// The configuration for the prebuilt speaker to use.
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct PrebuiltVoiceConfig {
+    /// The name of the prebuilt voice to use.
     pub voice_name: Option<String>,
 }
 
 #[skip_serializing_none]
+/// The configuration for the voice to use.
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct VoiceConfig {
+    /// The configuration for the speaker to use.
     pub prebuilt_voice_config: Option<PrebuiltVoiceConfig>,
 }
 
 #[skip_serializing_none]
+/// The speech generation configuration.
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct SpeechConfig {
+    /// The configuration for the speaker to use.
     pub voice_config: Option<VoiceConfig>,
 }
 
 #[skip_serializing_none]
+/// When automated routing is specified, the routing will be determined by the pretrained routing model.
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub struct GenerationConfigRoutingConfigAutoRoutingMode {
+    /// The model routing preference.
     pub model_routing_preference: Option<String>,
 }
 
 #[skip_serializing_none]
+/// When manual routing is set, the specified model will be used directly.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct GenerationConfigRoutingConfigManualRoutingMode {
+    /// The model name to use. Only the public LLM models are accepted.
     pub model_name: Option<String>,
 }
 
 #[skip_serializing_none]
+/// The configuration for routing the request to a specific model.
 #[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
 #[setters(strip_option, into)]
 pub struct GenerationConfigRoutingConfig {
+    /// Automated routing.
     pub auto_mode: Option<GenerationConfigRoutingConfigAutoRoutingMode>,
+    /// Manual routing.
     pub manual_mode: Option<GenerationConfigRoutingConfigManualRoutingMode>,
-}
-
-#[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
-#[setters(strip_option, into)]
-pub struct GenerateContentConfig {
-    pub system_instruction: Option<Content>,
-    pub temperature: Option<f64>,
-    pub top_p: Option<f64>,
-    pub top_k: Option<f64>,
-    pub candidate_count: Option<i64>,
-    pub max_output_tokens: Option<i64>,
-    pub stop_sequences: Option<Vec<String>>,
-    pub response_logprobs: Option<bool>,
-    pub logprobs: Option<i64>,
-    pub presence_penalty: Option<f64>,
-    pub frequency_penalty: Option<f64>,
-    pub seed: Option<i64>,
-    pub response_mime_type: Option<String>,
-    pub response_schema: Option<Schema>,
-    pub routing_config: Option<GenerationConfigRoutingConfig>,
-    pub safety_settings: Option<Vec<SafetySetting>>,
-    pub tools: Option<Vec<Tool>>,
-    pub tool_config: Option<ToolConfig>,
-    pub cached_content: Option<String>,
-    pub response_modalities: Option<Vec<String>>,
-    pub media_resolution: Option<MediaResolution>,
-    pub speech_config: Option<SpeechConfig>,
 }
 
 #[skip_serializing_none]
@@ -623,20 +657,75 @@ pub struct GenerateContentResponse {
 #[skip_serializing_none]
 #[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
 #[setters(strip_option, into)]
-pub struct GenerationConfig {
-    pub audio_timestamp: Option<bool>,
+pub struct GenerateContentConfig {
+    pub system_instruction: Option<Content>,
+    pub temperature: Option<f64>,
+    pub top_p: Option<f64>,
+    pub top_k: Option<f64>,
     pub candidate_count: Option<i64>,
-    pub frequency_penalty: Option<f64>,
-    pub logprobs: Option<i64>,
     pub max_output_tokens: Option<i64>,
-    pub presence_penalty: Option<f64>,
+    pub stop_sequences: Option<Vec<String>>,
     pub response_logprobs: Option<bool>,
+    pub logprobs: Option<i64>,
+    pub presence_penalty: Option<f64>,
+    pub frequency_penalty: Option<f64>,
+    pub seed: Option<i64>,
     pub response_mime_type: Option<String>,
     pub response_schema: Option<Schema>,
     pub routing_config: Option<GenerationConfigRoutingConfig>,
+    pub safety_settings: Option<Vec<SafetySetting>>,
+    pub tools: Option<Vec<Tool>>,
+    pub tool_config: Option<ToolConfig>,
+    pub cached_content: Option<String>,
+    pub response_modalities: Option<Vec<String>>,
+    pub media_resolution: Option<MediaResolution>,
+    pub speech_config: Option<SpeechConfig>,
+}
+
+/// Configuration for generation settings.
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
+pub struct GenerationConfig {
+    /// Optional. If enabled, audio timestamp will be included.
+    pub audio_timestamp: Option<bool>,
+    /// Optional. Number of candidates to generate.
+    pub candidate_count: Option<i64>,
+    /// Optional. Frequency penalties.
+    pub frequency_penalty: Option<f64>,
+    /// Optional. Logit probabilities.
+    pub logprobs: Option<i64>,
+    /// Optional. The maximum number of output tokens to generate per message.
+    pub max_output_tokens: Option<i64>,
+    /// Optional. Positive penalties.
+    pub presence_penalty: Option<f64>,
+    /// Optional. If true, export the logprobs results in response.
+    pub response_logprobs: Option<bool>,
+    /// Optional. Output response MIME type of the generated candidate text.
+    pub response_mime_type: Option<String>,
+    /// Optional. Schema object allows the definition of input and output data types.
+    pub response_schema: Option<Schema>,
+    /// Optional. Routing configuration.
+    pub routing_config: Option<GenerationConfigRoutingConfig>,
+    /// Optional. Seed.
     pub seed: Option<i64>,
+    /// Optional. Stop sequences.
     pub stop_sequences: Option<Vec<String>>,
+    /// Optional. Controls the randomness of predictions.
     pub temperature: Option<f64>,
+    /// Optional. If specified, top-k sampling will be used.
     pub top_k: Option<f64>,
+    /// Optional. If specified, nucleus sampling will be used.
     pub top_p: Option<f64>,
+}
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
+pub struct GenerateContentReq {
+    pub model: String,
+    pub contents: Vec<Content>,
+    #[serde(rename = "generationConfig")]
+    pub generation_config: Option<GenerationConfig>,
+    pub system_instruction: Option<Content>,
 }
