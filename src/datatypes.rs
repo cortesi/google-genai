@@ -1,3 +1,4 @@
+use derive_setters::*;
 use serde_derive::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use time::Date;
@@ -223,7 +224,8 @@ pub struct Blob {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct Part {
     pub video_metadata: Option<VideoMetadata>,
     pub code_execution_result: Option<CodeExecutionResult>,
@@ -394,7 +396,8 @@ pub struct GenerationConfigRoutingConfig {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Setters, Default)]
+#[setters(strip_option, into)]
 pub struct GenerateContentConfig {
     pub system_instruction: Option<Content>,
     pub temperature: Option<f64>,
@@ -421,7 +424,8 @@ pub struct GenerateContentConfig {
 }
 
 #[skip_serializing_none]
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default, Setters)]
+#[setters(strip_option, into)]
 pub struct GenerateContentParameters {
     pub model: Option<String>,
     pub contents: Option<Vec<Content>>,
