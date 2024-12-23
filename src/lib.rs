@@ -26,39 +26,43 @@ pub async fn generate_content_stream(
         "{}/{}:streamGenerateContent?alt=sse&key={}",
         BASE_URL, req.model, api_key
     );
-    let es = client
-        .post(&url)
-        .json(&req)
-        .eventsource()
-        .map_err(|e| GenAiError::Internal(format!("Failed to create event source: {}", e)))?;
-    let stream = es
-        .map(|event| match event {
+    let es = match client.post(&url).json(&req).eventsource() {
+        Ok(es) => es,
+        Err(reqwest_eventsource::CannotCloneRequestError) => {
+            return Err(GenAiError::Internal("Failed to clone request".to_string()));
+        }
+    };
+    let stream = es.filter_map(|event| async move {
+        match event {
             Ok(Event::Message(message)) => {
                 let data = message.data;
                 if data == "[DONE]" {
-                    return Ok(Some(datatypes::GenerateContentResponse {
+                    return Some(Ok(datatypes::GenerateContentResponse {
                         candidates: None,
                         prompt_feedback: None,
                         model_version: None,
                         usage_metadata: None,
                     }));
                 }
-                serde_json::from_str(&data)
-                    .map_err(|e| GenAiError::Internal(format!("JSON parse error: {}\n{}", e, data)))
-                    .map(Some)
+                Some(serde_json::from_str(&data).map_err(|e| {
+                    GenAiError::Internal(format!("JSON parse error: {}\n{}", e, data))
+                }))
             }
-            Ok(Event::Open) => Ok(None),
+            Ok(Event::Open) => None,
+            Err(reqwest_eventsource::Error::InvalidStatusCode(_, response)) => {
+                Some(Err(GenAiError::from_response(response).await))
+            }
             Err(reqwest_eventsource::Error::StreamEnded) => {
-                Ok(Some(datatypes::GenerateContentResponse {
+                Some(Ok(datatypes::GenerateContentResponse {
                     candidates: None,
                     prompt_feedback: None,
                     model_version: None,
                     usage_metadata: None,
                 }))
             }
-            Err(e) => Err(GenAiError::Internal(format!("Stream error: {}", e))),
-        })
-        .filter_map(|r| async move { r.transpose() });
+            Err(e) => Some(Err(GenAiError::Internal(format!("Stream error: {}", e)))),
+        }
+    });
 
     Ok(Box::pin(stream))
 }
@@ -79,8 +83,7 @@ pub async fn generate_content(
         .await
         .map_err(|e| GenAiError::Internal(format!("Request failed: {}", e)))?;
     if !response.status().is_success() {
-        let error_text = response.text().await.unwrap_or_default();
-        return Err(GenAiError::Remote(error_text));
+        return Err(GenAiError::from_response(response).await);
     }
     response
         .json()
